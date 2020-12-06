@@ -1,0 +1,43 @@
+version: '3.5'
+
+services:
+  webnsurf-nestjs-postgresql:
+    container_name: webnsurf-nestjs-dev_DB
+    build: docker/postgresql
+    image: webnsurf-nestjs-postgresql:latest
+    ports:
+      - 5432:5432
+    env_file: .env
+
+  webnsurf-nestjs-dev-api:
+    container_name: webnsurf-nestjs-dev_BE
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    image: webnsurf-nestjs-dev-api:latest
+    ports:
+      - 3000
+    labels:
+      traefik.enable: true
+      traefik.http.routers.webnsurf-nestjs-dev-api-redirect.rule: Host(`nestjs.dev.webnsurf.com`) && PathPrefix(`/api`)
+      traefik.http.routers.webnsurf-nestjs-dev-api-redirect.middlewares: https-redirect@file
+      traefik.http.routers.webnsurf-nestjs-dev-api-redirect.entrypoints: web
+
+      traefik.http.routers.webnsurf-nestjs-dev-api.rule: Host(`nestjs.dev.webnsurf.com`) && PathPrefix(`/api`)
+      traefik.http.routers.webnsurf-nestjs-dev-api.entrypoints: websecure
+      traefik.http.routers.webnsurf-nestjs-dev-api.middlewares: api-stripprefix
+      traefik.http.middlewares.api-stripprefix.stripprefix.prefixes: /api
+      traefik.http.routers.webnsurf-nestjs-dev-api.tls: true
+    volumes:
+      - /app/dist
+      - /app/node_modules
+      - $PWD:/app
+    env_file: .env
+    environment:
+      NODE_ENV: development
+      RUNTIME_ENV: development
+
+networks:
+  default:
+    external:
+      name: webnsurf_network
