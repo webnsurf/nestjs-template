@@ -27,7 +27,7 @@ clean-postgres: ## Stop and remove Web'n'surF NestJS docker containers and image
 .PHONY:
 build-local: clean-api ## Build Web'n'surF NestJS docker image and restart containers
 	@docker build . --file "docker/Dockerfile" --tag webnsurf-nestjs-api:latest && \
-	make local
+	make run-local
 
 .PHONY:
 run-local:
@@ -49,7 +49,7 @@ run-local:
 .PHONY:
 local: ## Start Web'n'surF NestJS docker containers
 	@docker-compose up -d webnsurf-nestjs-postgresql && \
-	(docker start webnsurf-nestjs-api || make run-local || (make build-local && make local)) && echo "Container started!"
+	((docker start webnsurf-nestjs-api || (echo "No container..." && exit 1)) || (make run-local || (echo "No image..." && exit 1)) || make build-local) && echo "Container started!"
 
 .PHONY:
 clean-local: ## Remove Web'n'surF NestJS docker containers and images
