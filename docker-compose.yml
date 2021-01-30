@@ -2,30 +2,30 @@ version: '3.5'
 
 services:
   webnsurf-nestjs-postgresql:
-    container_name: webnsurf-nestjs-dev_DB
+    container_name: ${STACK}-dev_DB
     build: pipelines/postgresql
-    image: webnsurf-nestjs-postgresql:latest
+    image: ${STACK}-postgresql:latest
     ports:
       - 5432:5432
     env_file: .env
 
-  webnsurf-nestjs-dev-api:
-    container_name: webnsurf-nestjs-dev_BE
+  webnsurf-nestjs-api-dev:
+    container_name: ${STACK}-dev_BE
     build:
       context: .
       dockerfile: pipelines/Dockerfile.dev
-    image: webnsurf-nestjs-dev-api:latest
+    image: ${IMAGE}-dev:latest
     ports:
       - ${PORT}
     labels:
       traefik.enable: true
-      traefik.http.routers.webnsurf-nestjs-dev-api-redirect.rule: Host(`nestjs.dev.webnsurf.com`) && PathPrefix(`/api`)
-      traefik.http.routers.webnsurf-nestjs-dev-api-redirect.middlewares: https-redirect@file
-      traefik.http.routers.webnsurf-nestjs-dev-api-redirect.entrypoints: web
+      traefik.http.routers.webnsurf-nestjs-api-dev-redirect.rule: Host(`${DEV_URL}`) && PathPrefix(`/api`)
+      traefik.http.routers.webnsurf-nestjs-api-dev-redirect.middlewares: https-redirect@file
+      traefik.http.routers.webnsurf-nestjs-api-dev-redirect.entrypoints: web
 
-      traefik.http.routers.webnsurf-nestjs-dev-api.rule: Host(`nestjs.dev.webnsurf.com`) && PathPrefix(`/api`)
-      traefik.http.routers.webnsurf-nestjs-dev-api.entrypoints: websecure
-      traefik.http.routers.webnsurf-nestjs-dev-api.tls: true
+      traefik.http.routers.webnsurf-nestjs-api-dev.rule: Host(`${DEV_URL}`) && PathPrefix(`/api`)
+      traefik.http.routers.webnsurf-nestjs-api-dev.entrypoints: websecure
+      traefik.http.routers.webnsurf-nestjs-api-dev.tls: true
     volumes:
       - /app/dist
       - /app/node_modules

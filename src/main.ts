@@ -12,7 +12,7 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       transform: true,
-      exceptionFactory: errors => {
+      exceptionFactory: (errors) => {
         const fields: { [key: string]: string } = {};
         errors.forEach(({ property, constraints }) => {
           fields[property] = Object.values(constraints)[0];
@@ -32,9 +32,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerOptions);
-  SwaggerModule.setup('docs', app, document);
-
-  console.log({ PORT });
+  SwaggerModule.setup('api/docs', app, document);
 
   await app.listen(PORT, () => {
     console.log(`Server started on ${new Date().toUTCString()}`);
