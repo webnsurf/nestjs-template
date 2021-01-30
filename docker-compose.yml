@@ -3,7 +3,7 @@ version: '3.5'
 services:
   webnsurf-nestjs-postgresql:
     container_name: webnsurf-nestjs-dev_DB
-    build: docker/postgresql
+    build: pipelines/postgresql
     image: webnsurf-nestjs-postgresql:latest
     ports:
       - 5432:5432
@@ -13,10 +13,10 @@ services:
     container_name: webnsurf-nestjs-dev_BE
     build:
       context: .
-      dockerfile: docker/Dockerfile.dev
+      dockerfile: pipelines/Dockerfile.dev
     image: webnsurf-nestjs-dev-api:latest
     ports:
-      - 3000
+      - ${PORT}
     labels:
       traefik.enable: true
       traefik.http.routers.webnsurf-nestjs-dev-api-redirect.rule: Host(`nestjs.dev.webnsurf.com`) && PathPrefix(`/api`)
@@ -25,13 +25,12 @@ services:
 
       traefik.http.routers.webnsurf-nestjs-dev-api.rule: Host(`nestjs.dev.webnsurf.com`) && PathPrefix(`/api`)
       traefik.http.routers.webnsurf-nestjs-dev-api.entrypoints: websecure
-      traefik.http.routers.webnsurf-nestjs-dev-api.middlewares: api-stripprefix
-      traefik.http.middlewares.api-stripprefix.stripprefix.prefixes: /api
       traefik.http.routers.webnsurf-nestjs-dev-api.tls: true
     volumes:
       - /app/dist
       - /app/node_modules
       - $PWD:/app
+      - $PWD/.env:/app/.env
     env_file: .env
     environment:
       NODE_ENV: development

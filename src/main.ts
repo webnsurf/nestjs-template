@@ -4,6 +4,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 
 import { AppModule } from './app.module';
+import { PORT } from './environment';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,6 +24,7 @@ async function bootstrap() {
   );
 
   app.use(cookieParser());
+  app.setGlobalPrefix('api');
 
   const swaggerOptions = new DocumentBuilder()
     .setTitle("Web'n'surF NestJS API")
@@ -32,10 +34,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerOptions);
   SwaggerModule.setup('docs', app, document);
 
-  await app.listen(3000);
+  console.log({ PORT });
 
-  console.log({
-    RUNTIME_ENV: process.env.RUNTIME_ENV,
+  await app.listen(PORT, () => {
+    console.log(`Server started on ${new Date().toUTCString()}`);
+    console.log(`  Port: ${PORT}`);
+    console.log(`  Runtime: ${process.env.RUNTIME_ENV}`);
   });
 }
 bootstrap();

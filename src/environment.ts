@@ -6,3 +6,5 @@ export const BASE_AUTH_COOKIE_OPTIONS: CookieOptions = {
   domain: 'webnsurf.com',
   secure: true,
 };
+
+export const PORT = process.env.PORT;
