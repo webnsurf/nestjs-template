@@ -3,7 +3,7 @@ version: '3.5'
 services:
   webnsurf-nestjs-api:
     container_name: ${NAME}
-    image: ${IMAGE}:${TAG}
+    image: ${IMAGE}:${BUILD_ID}
     tty: true
     ports:
       - ${PORT}

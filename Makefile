@@ -8,56 +8,51 @@ help:
 
 # DEVELOPMENT SETUP
 .PHONY:
-dev: ## Run Web'n'surF NestJS API development docker containers
+dev: ## Run API development docker containers
 	@( \
-		docker image ls | grep webnsurf-nestjs-dev-api && \
-		docker-compose up | sed -En "s/(webnsurf-nestjs-dev_\\s*(BE|DB)\\s*(.*)|(Step| --->|Building|Removing|Creating|Successfully))/\\2 \\3\\4/p" \
+		docker image ls | grep ${STACK}-dev-api && \
+		docker-compose up | sed -En "s/(${STACK}-dev_\\s*(BE|DB)\\s*(.*)|(Step| --->|Building|Removing|Creating|Successfully))/\\2 \\3\\4/p" \
 	) || (make build-dev && make dev)
 
 .PHONY:
-build-dev: ## Run Web'n'surF NestJS API development docker containers
+build-dev: ## Run API development docker containers
 	@docker-compose up --build -d
 
 .PHONY:
-clean-dev: ## Stop and remove Web'n'surF NestJS API development docker containers and images
+clean-dev: ## Stop and remove API development docker containers and images
 	@docker-compose down && \
-	docker image rm webnsurf-nestjs-dev-api webnsurf-nestjs-postgresql || true
+	docker image rm ${STACK}-dev-api ${STACK}-postgresql || true
 
 
 # LOCAL SETUP
 .PHONY:
 run-local:
-	@export RUNTIME_ENV=local && pipelines/scripts/start.sh \
-		--name webnsurf-nestjs-api \
-		--image webnsurf-nestjs-api \
-		--tag latest \
-		--url nestjs.local.webnsurf.com \
-		--port 80
+	@pipelines/scripts/start.sh
 
 .PHONY:
-local: ## Start Web'n'surF NestJS API docker containers
-	@docker-compose up -d webnsurf-nestjs-postgresql && \
+local: ## Start API docker containers
+	@docker-compose up -d ${STACK}-postgresql && \
 	( \
-		(docker start webnsurf-nestjs-api || (echo "No container..." && exit 1)) || \
-		((docker image ls webnsurf-nestjs-api | grep latest && make run-local) || (echo "No image..." && exit 1)) || \
+		(docker start ${STACK}-api || (echo "No container..." && exit 1)) || \
+		((docker image ls ${STACK}-api | grep latest && make run-local) || (echo "No image..." && exit 1)) || \
 		make build-local \
 	) && echo "Container started!"
 
 .PHONY:
-build-local: clean-api ## Build Web'n'surF NestJS API docker image and restart containers
-	@docker build . --file "pipelines/Dockerfile" --tag webnsurf-nestjs-api:latest && \
+build-local: clean-api ## Build API docker image and restart containers
+	@docker build . --file "pipelines/Dockerfile" --tag ${STACK}-api:latest && \
 	make run-local
 
 .PHONY:
-clean-local: ## Remove Web'n'surF NestJS API docker containers and images
-	@docker kill webnsurf-nestjs-api webnsurf-nestjs-dev_DB || true && \
-	docker rm webnsurf-nestjs-api webnsurf-nestjs-dev_DB || true && \
-	docker image rm webnsurf-nestjs-api webnsurf-nestjs-postgresql || true \
+clean-local: ## Remove API docker containers and images
+	@docker kill ${STACK}-api ${STACK}-dev_DB || true && \
+	docker rm ${STACK}-api ${STACK}-dev_DB || true && \
+	docker image rm ${STACK}-api ${STACK}-postgresql || true \
 
 .PHONY:
 clean-api:
-	@docker kill webnsurf-nestjs-api || true && \
-	docker rm webnsurf-nestjs-api || true
+	@docker kill ${STACK}-api || true && \
+	docker rm ${STACK}-api || true
 
 .PHONY:
 lint:

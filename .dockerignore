@@ -1,2 +1,5 @@
 node_modules/
 dist/
+
+pipelines/
+!pipelines/postgresql/*.sql

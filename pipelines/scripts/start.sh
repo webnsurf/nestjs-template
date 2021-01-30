@@ -1,50 +1,26 @@
 #! /bin/bash
-
-POSITIONAL=()
-while [[ $# -gt 0 ]]; do key="$1"
-  case $key in
-    --image)
-    IMAGE="$2"; shift; shift;;
-    --tag)
-    TAG="$2"; shift; shift;;
-    --name)
-    NAME="$2"; shift; shift;;
-    --url)
-    URL="$2"; shift; shift;;
-    --stack)
-    STACK="$2"; shift; shift;;
-    --port)
-    PORT="$2"; shift; shift;;
-    *)
-    POSITIONAL+=("$1"); shift;;
-  esac
-done
-set -- "${POSITIONAL[@]}"; # restore positional parameters
-
-envFile=".env";
 composeFile="docker-compose.yml";
 
-if [ "$RUNTIME_ENV" != "local" ]; then
+if [ "$1" != "" ]; then
   pwd;
-  cd ~/releases/$NAME/$TAG/$STACK;
-  docker pull "${IMAGE}:${TAG}";
+  echo "Working directory: ~/releases/$1";
+  cd ~/releases/$1;
 else
   composeFile="pipelines/docker-compose.yml";
-  envFile="../.env";
 fi;
+
+envFile="$PWD/.env";
+
+set -o allexport; source $envFile; set +o allexport;
+docker pull "${IMAGE}:${BUILD_ID}";
 
 pwd;
 ls -la;
 
-export IMAGE="${IMAGE}";
-export TAG="${TAG}";
-export NAME="${NAME}";
-export URL="${URL}";
-export PORT="${PORT}";
 export ENV_FILE="${envFile}";
 
 echo "IMAGE = ${IMAGE}";
-echo "TAG = ${TAG}";
+echo "BUILD_ID = ${BUILD_ID}";
 echo "STACK = ${STACK}";
 echo "NAME = ${NAME}";
 echo "URL = ${URL}";
