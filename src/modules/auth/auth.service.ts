@@ -36,21 +36,24 @@ export class AuthService {
   }
 
   async register(userData: RegisterRequest) {
-    const existingUser = await this.userService.getByEmail(userData.email);
-
-    if (existingUser) {
-      throw new ConflictException({
-        fields: { email: 'Email already in use' },
-      });
-    }
-
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(userData.password, salt);
 
-    return this.userService.createNewUser({
-      ...userData,
-      password: hashedPassword,
-    });
+    try {
+      const user = await this.userService.createNewUser({
+        ...userData,
+        password: hashedPassword,
+      });
+      return user;
+    } catch (postgresError) {
+      if (/Key \(email\)/.test(postgresError.detail)) {
+        throw new ConflictException({
+          fieldErrors: { email: 'Email already in use' },
+        });
+      }
+
+      throw postgresError;
+    }
   }
 
   async login(userData: LoginRequest) {
@@ -59,7 +62,10 @@ export class AuthService {
     });
 
     if (!user || !bcrypt.compareSync(userData.password, user.password)) {
-      throw new UnauthorizedException('Invalid details');
+      throw new UnauthorizedException({
+        fieldErrors: { email: 'Email or password incorrect' },
+        message: 'Invalid details provided',
+      });
     }
 
     return user;
