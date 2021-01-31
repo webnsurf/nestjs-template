@@ -1,10 +1,4 @@
-import {
-  Entity,
-  Column,
-  OneToMany,
-  EntityRepository,
-  Repository,
-} from 'typeorm';
+import { Entity, Column, OneToMany, EntityRepository, Repository } from 'typeorm';
 
 import { BaseEntity } from 'src/entities';
 import { Organisations_Users } from 'src/modules/organisation/model';
@@ -25,10 +19,7 @@ export class User extends BaseEntity {
   @Column({ type: 'text', nullable: true })
   image: string;
 
-  @OneToMany(
-    () => Organisations_Users,
-    userOrgs => userOrgs.user,
-  )
+  @OneToMany(() => Organisations_Users, userOrgs => userOrgs.user)
   organisations: UserOrganisation[];
 }
 
@@ -36,11 +27,7 @@ export class User extends BaseEntity {
 export class UserRepository extends Repository<User> {
   async findWithOrganisations(where: Partial<User>) {
     const userRows = await this.createQueryBuilder('user')
-      .leftJoinAndSelect(
-        'organisations_users',
-        'org_user',
-        'org_user.user_id = user.id',
-      )
+      .leftJoinAndSelect('organisations_users', 'org_user', 'org_user.user_id = user.id')
       .leftJoinAndSelect(
         'organisations',
         'organisation',

@@ -1,10 +1,4 @@
-import {
-  Entity,
-  Column,
-  PrimaryColumn,
-  EntityRepository,
-  Repository,
-} from 'typeorm';
+import { Entity, Column, PrimaryColumn, EntityRepository, Repository } from 'typeorm';
 
 @Entity({ name: 'user_roles' })
 export class UserRoleEntity {

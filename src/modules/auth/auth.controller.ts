@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Request,
-  Response,
-  Get,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Post, Body, Request, Response, Get, UseGuards } from '@nestjs/common';
 
 import { LoginRequest, RegisterRequest } from './auth.request';
 import { AuthService } from './auth.service';
@@ -27,18 +19,12 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() data: RegisterRequest, @Response() res) {
-    this.authService.signAndSendResponse(
-      await this.authService.register(data),
-      res,
-    );
+    this.authService.signAndSendResponse(await this.authService.register(data), res);
   }
 
   @Post('login')
   async login(@Body() data: LoginRequest, @Response() res) {
-    this.authService.signAndSendResponse(
-      await this.authService.login(data),
-      res,
-    );
+    this.authService.signAndSendResponse(await this.authService.login(data), res);
   }
 
   @Get('logout')

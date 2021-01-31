@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  ConflictException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 
 import { UserRole } from 'src/modules/user/model';
 import { UserService } from 'src/modules/user/user.service';
@@ -29,9 +25,7 @@ export class OrganisationService {
       throw new ConflictException({ fields: { name: 'Name already taken' } });
     }
 
-    const organisation = await this.orgRepository.save(
-      this.orgRepository.create(data),
-    );
+    const organisation = await this.orgRepository.save(this.orgRepository.create(data));
 
     await this.linkUser(organisation.id, userId, UserRole.ADMIN);
 
@@ -73,11 +67,7 @@ export class OrganisationService {
     });
   }
 
-  async updateUserRole(
-    organisationId: string,
-    userId: string,
-    roleId: UserRole,
-  ) {
+  async updateUserRole(organisationId: string, userId: string, roleId: UserRole) {
     await this.orgUsersRepo.update({ organisationId, userId }, { roleId });
   }
 
@@ -90,10 +80,7 @@ export class OrganisationService {
     return userRoleRecord?.roleId;
   }
 
-  private async checkUserInOrganisation(
-    organisationId: string,
-    userId: string,
-  ) {
+  private async checkUserInOrganisation(organisationId: string, userId: string) {
     const userCount = await this.orgUsersRepo.count({
       where: { organisationId, userId },
     });
@@ -101,11 +88,7 @@ export class OrganisationService {
     return userCount > 0;
   }
 
-  private async linkUser(
-    organisationId: string,
-    userId: string,
-    roleId: number,
-  ) {
+  private async linkUser(organisationId: string, userId: string, roleId: number) {
     return await this.orgUsersRepo.save(
       this.orgUsersRepo.create({
         organisationId,

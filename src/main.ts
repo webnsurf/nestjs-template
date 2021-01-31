@@ -12,7 +12,7 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       transform: true,
-      exceptionFactory: (errors) => {
+      exceptionFactory: errors => {
         const fields: { [key: string]: string } = {};
         errors.forEach(({ property, constraints }) => {
           fields[property] = Object.values(constraints)[0];

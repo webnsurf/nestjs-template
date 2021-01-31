@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-  SetMetadata,
-} from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 
@@ -12,10 +7,7 @@ import { UserRole } from 'src/modules/user/model';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(
-    private reflector: Reflector,
-    private orgService: OrganisationService,
-  ) {}
+  constructor(private reflector: Reflector, private orgService: OrganisationService) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const { params, user } = context.switchToHttp().getRequest<Request>();
     const roles = this.reflector.get<UserRole[]>('roles', context.getHandler());
@@ -25,5 +17,4 @@ export class RolesGuard implements CanActivate {
   }
 }
 
-export const AllowedRoles = (...roles: UserRole[]) =>
-  SetMetadata('roles', roles);
+export const AllowedRoles = (...roles: UserRole[]) => SetMetadata('roles', roles);

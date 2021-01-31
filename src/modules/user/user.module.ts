@@ -2,12 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { UserController } from './user.controller';
-import {
-  User,
-  UserRepository,
-  UserRoleEntity,
-  UserRoleRepository,
-} from './model';
+import { User, UserRepository, UserRoleEntity, UserRoleRepository } from './model';
 import { UserService } from './user.service';
 
 const typeOrmModule = TypeOrmModule.forFeature([

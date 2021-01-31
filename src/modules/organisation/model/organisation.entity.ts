@@ -1,10 +1,4 @@
-import {
-  Entity,
-  Column,
-  OneToMany,
-  EntityRepository,
-  Repository,
-} from 'typeorm';
+import { Entity, Column, OneToMany, EntityRepository, Repository } from 'typeorm';
 
 import { BaseEntity } from 'src/entities';
 
@@ -15,10 +9,7 @@ export class Organisation extends BaseEntity {
   @Column({ type: 'varchar', length: 100, unique: true })
   name: string;
 
-  @OneToMany(
-    () => Organisations_Users,
-    userOrgs => userOrgs.organisation,
-  )
+  @OneToMany(() => Organisations_Users, userOrgs => userOrgs.organisation)
   users: Organisations_Users[];
 }
 

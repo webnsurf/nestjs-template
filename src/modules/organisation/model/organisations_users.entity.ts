@@ -21,19 +21,11 @@ export class Organisations_Users extends TimeStampEntity {
   @PrimaryColumn({ name: 'organisation_id', type: 'varchar', length: 32 })
   organisationId: string;
 
-  @ManyToOne(
-    () => User,
-    user => user.id,
-    { onDelete: 'CASCADE' },
-  )
+  @ManyToOne(() => User, user => user.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(
-    () => Organisation,
-    org => org.id,
-    { onDelete: 'CASCADE' },
-  )
+  @ManyToOne(() => Organisation, org => org.id, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'organisation_id' })
   organisation: Organisation;
 
