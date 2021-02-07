@@ -18,9 +18,7 @@ import { CreateOrganisationRequest } from './request/create.request';
 import { AddOrganisationUserRequest, UpdateOrganisationUserRequest } from './request/users.request';
 import { OrganisationResponse } from './response/organisation.response';
 
-const {
-  organisation: { editUsers },
-} = accessControl;
+const { organisation } = accessControl;
 
 @Controller('organisation')
 export class OrganisationController {
@@ -32,27 +30,34 @@ export class OrganisationController {
     return new OrganisationResponse(await this.orgService.create(data, req.user.id)).asAdmin();
   }
 
-  @UseGuards(JwtAuthGuard)
+  @AllowedRoles(...organisation.delete)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Delete(':orgId')
+  async delete(@Param('orgId') orgId: string) {
+    return this.orgService.delete(orgId);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Get(':orgId/users')
   async getUsers(@Param('orgId') id) {
     return await this.orgService.getUsers(id);
   }
 
-  @AllowedRoles(...editUsers)
+  @AllowedRoles(...organisation.editUsers)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post(':orgId/users')
   async addUser(@Body() data: AddOrganisationUserRequest, @Param('orgId') orgId: string) {
     return await this.orgService.addUser(orgId, data);
   }
 
-  @AllowedRoles(...editUsers)
+  @AllowedRoles(...organisation.editUsers)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete(':orgId/users/:userId')
   async removeUser(@Param('orgId') orgId: string, @Param('userId') userId: string) {
     return await this.orgService.removeUser(orgId, userId);
   }
 
-  @AllowedRoles(...editUsers)
+  @AllowedRoles(...organisation.editUsers)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch(':orgId/users/:userId')
   async updateUserRole(

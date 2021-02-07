@@ -32,6 +32,10 @@ export class OrganisationService {
     return organisation;
   }
 
+  async delete(orgId: string) {
+    return this.orgRepository.delete(orgId);
+  }
+
   async getUsers(organisationId: string) {
     const users = await this.orgUsersRepo.find({
       relations: ['user'],
